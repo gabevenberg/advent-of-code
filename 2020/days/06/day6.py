@@ -2,14 +2,13 @@
 
 import pathlib
 import sys
-import re
-from dataclasses import dataclass
-from pprint import pprint
+
 
 def parse(puzzle_input: str):
     """Parse input"""
-    records = [[list(y) for y in x.splitlines()] for x in puzzle_input.split('\n\n')]
+    records = [[list(y) for y in x.splitlines()] for x in puzzle_input.split("\n\n")]
     return records
+
 
 def part1(data):
     """Solve part 1"""
@@ -21,6 +20,7 @@ def part1(data):
         results.append(len(result))
     return sum(results)
 
+
 def part2(data):
     """Solve part 2"""
     results = []
@@ -31,6 +31,7 @@ def part2(data):
         results.append(len(result))
     return sum(results)
 
+
 def solve(puzzle_input):
     """Solve the puzzle for the given input"""
     data = parse(puzzle_input)
@@ -38,6 +39,7 @@ def solve(puzzle_input):
     solution2 = part2(data)
 
     return solution1, solution2
+
 
 if __name__ == "__main__":
     for path in sys.argv[1:]:
