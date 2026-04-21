@@ -5,5 +5,6 @@ description = "Advent of code 2020 in python."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "parsy>=2.2",
     "pytest>=9.0.3",
 ]
