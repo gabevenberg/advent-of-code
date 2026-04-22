@@ -78,8 +78,16 @@ def part1(rules: Rules):
     return len(solution)
 
 
-def part2(data):
+def find_nested_bags(bag: Bag, rules: Rules) -> int:
+    if rules[bag] == {}:
+        return 0
+    else:
+        return sum([i + (find_nested_bags(b, rules) * i) for b, i in rules[bag].items()])
+
+
+def part2(rules):
     """Solve part 2"""
+    return find_nested_bags(Bag("shiny", "gold"), rules)
 
 
 def solve(puzzle_input):
