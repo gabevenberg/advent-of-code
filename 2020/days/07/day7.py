@@ -1,41 +1,19 @@
 #! /usr/bin/env python3
 
 import sys
-from typing import Dict
 from dataclasses import dataclass
-from enum import StrEnum, auto
 import pathlib
 
 import parsy
 
 
-class Color(StrEnum):
-    RED = auto()
-    ORANGE = auto()
-    WHITE = auto()
-    YELLOW = auto()
-    GOLD = auto()
-    OLIVE = auto()
-    PLUM = auto()
-    BLUE = auto()
-    BLACK = auto()
-
-
-class Descriptor(StrEnum):
-    LIGHT = auto()
-    DARK = auto()
-    BRIGHT = auto()
-    MUTED = auto()
-    SHINY = auto()
-    VIBRANT = auto()
-    FADED = auto()
-    DOTTED = auto()
-
-
 @dataclass(frozen=True)
 class Bag:
-    descriptor: Descriptor
-    color: Color
+    descriptor: str
+    color: str
+
+
+type Rules = dict[Bag, dict[Bag, int]]
 
 
 def parse(puzzle_input: str) -> dict[Bag, dict[Bag, int]]:
@@ -52,7 +30,6 @@ def parse_line(input: str) -> tuple[Bag, dict[Bag, int]]:
     d, c = parse_bag().parse(bagstr.strip())
     bag = Bag(d, c)
     rules = parse_rules().parse(rulesstr.strip())
-    print(bag, rules)
     rules = {Bag(r[1][0], r[1][1]): r[0] for r in rules}
     return (bag, rules)
 
@@ -72,16 +49,33 @@ def parse_rule() -> parsy.Parser:
 
 
 def parse_bag() -> parsy.Parser:
-    descriptorparser = parsy.from_enum(Descriptor).desc("descriptor")
-    colorparser = parsy.from_enum(Color).desc("color")
+    descriptorparser = parsy.regex(r"\w+").desc("descriptor")
+    colorparser = parsy.regex(r"\w+").desc("color")
     return parsy.seq(
         descriptorparser << parsy.whitespace,
         colorparser << parsy.whitespace << parsy.string_from("bag", "bags"),
     )
 
 
-def part1(data):
+def find_direct_holders(bag: Bag, rules: Rules) -> set[Bag]:
+    ret = set()
+    for container, contents in rules.items():
+        for content in contents.keys():
+            if content == bag:
+                ret.add(container)
+    return ret
+
+
+def part1(rules: Rules):
     """Solve part 1"""
+    solution = set()
+    search = set([Bag("shiny", "gold")])
+    while len(search) != 0:
+        bags = find_direct_holders(search.pop(), rules)
+        for bag in bags:
+            solution.add(bag)
+            search.add(bag)
+    return len(solution)
 
 
 def part2(data):

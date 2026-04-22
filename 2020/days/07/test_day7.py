@@ -3,7 +3,7 @@
 import pathlib
 import pytest
 import day7 as aoc
-from day7 import Bag, Color, Descriptor
+from day7 import Bag
 
 PUZZLE_DIR = pathlib.Path(__file__).parent
 
@@ -18,37 +18,42 @@ def example():
 def test_parse(example):
     """Test that input is parsed properly"""
     assert example == {
-        Bag(Descriptor.LIGHT, Color.RED): {
-            Bag(Descriptor.BRIGHT, Color.WHITE): 1,
-            Bag(Descriptor.MUTED, Color.YELLOW): 2,
+        Bag("light", "red"): {
+            Bag("bright", "white"): 1,
+            Bag("muted", "yellow"): 2,
         },
-        Bag(Descriptor.DARK, Color.ORANGE): {
-            Bag(Descriptor.BRIGHT, Color.WHITE): 3,
-            Bag(Descriptor.MUTED, Color.YELLOW): 4,
+        Bag("dark", "orange"): {
+            Bag("bright", "white"): 3,
+            Bag("muted", "yellow"): 4,
         },
-        Bag(Descriptor.BRIGHT, Color.WHITE): {Bag(Descriptor.SHINY, Color.GOLD): 1},
-        Bag(Descriptor.MUTED, Color.YELLOW): {
-            Bag(Descriptor.SHINY, Color.GOLD): 2,
-            Bag(Descriptor.FADED, Color.BLUE): 9,
+        Bag("bright", "white"): {Bag("shiny", "gold"): 1},
+        Bag("muted", "yellow"): {
+            Bag("shiny", "gold"): 2,
+            Bag("faded", "blue"): 9,
         },
-        Bag(Descriptor.SHINY, Color.GOLD): {
-            Bag(Descriptor.DARK, Color.OLIVE): 1,
-            Bag(Descriptor.VIBRANT, Color.PLUM): 2,
+        Bag("shiny", "gold"): {
+            Bag("dark", "olive"): 1,
+            Bag("vibrant", "plum"): 2,
         },
-        Bag(Descriptor.DARK, Color.OLIVE): {
-            Bag(Descriptor.FADED, Color.BLUE): 3,
-            Bag(Descriptor.DOTTED, Color.BLACK): 4,
+        Bag("dark", "olive"): {
+            Bag("faded", "blue"): 3,
+            Bag("dotted", "black"): 4,
         },
-        Bag(Descriptor.VIBRANT, Color.PLUM): {
-            Bag(Descriptor.FADED, Color.BLUE): 5,
-            Bag(Descriptor.DOTTED, Color.BLACK): 6,
+        Bag("vibrant", "plum"): {
+            Bag("faded", "blue"): 5,
+            Bag("dotted", "black"): 6,
         },
-        Bag(Descriptor.FADED, Color.BLUE): {},
-        Bag(Descriptor.DOTTED, Color.BLACK): {},
+        Bag("faded", "blue"): {},
+        Bag("dotted", "black"): {},
     }
 
 
-@pytest.mark.skip(reason="Not implemented")
+def test_find_direct_holders(example):
+    assert aoc.find_direct_holders(Bag("shiny", "gold"), example) == set(
+        [Bag("bright", "white"), Bag("muted", "yellow")]
+    )
+
+
 def test_part1(example):
     """Test part 1 on example input"""
     assert aoc.part1(example) == 4
