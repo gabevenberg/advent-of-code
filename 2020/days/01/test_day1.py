@@ -10,7 +10,7 @@ PUZZLE_DIR = pathlib.Path(__file__).parent
 # these test fixtures setup the test, mainly by reading the filename into a string in this simple case.
 @pytest.fixture
 def example():
-    puzzle_input = (PUZZLE_DIR / "example").read_text().strip()
+    puzzle_input = (PUZZLE_DIR / "example.txt").read_text().strip()
     return aoc.parse(puzzle_input)
 
 

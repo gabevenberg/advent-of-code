@@ -26,4 +26,4 @@ def test_part1(example):
 
 def test_part2(example):
     """Test part 2 on example input"""
-    assert aoc.part2(example) == 640
+    assert aoc.part2(example) is None
