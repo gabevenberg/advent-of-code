@@ -60,6 +60,50 @@ class VM:
             pass
         return (self.acc, self.program_counter)
 
+class TimeTravelVM:
+    program: list[Instruction]
+    acc: list[int]
+    program_counter: list[int]
+
+    def __init__(self, program: list[Instruction]) -> None:
+        self.program = program
+        self.reset()
+
+    def reset(self):
+        for instruction in self.program:
+            instruction.visited = False
+        self.acc = [0]
+        self.program_counter = [0]
+
+    def step(self) -> bool:
+        """Returns the value of the acc and whether the program can continue"""
+        match self.program[self.program_counter[-1]]:
+            case Instruction(visited=True):
+                return False
+            case Instruction(opcode=OpCode.ACC, argument=arg):
+                self.program[self.program_counter[-1]].visited = True
+                self.acc.append(self.acc[-1] + arg)
+                self.program_counter.append(self.program_counter[-1] + 1)
+                return True
+            case Instruction(opcode=OpCode.JMP, argument=arg):
+                self.program[self.program_counter[-1]].visited = True
+                self.program_counter.append(self.program_counter[-1] + arg)
+                return True
+            case Instruction(opcode=OpCode.NOP):
+                self.program[self.program_counter[-1]].visited = True
+                self.program_counter.append(self.program_counter[-1] + 1)
+                return True
+            case _:
+                raise ValueError
+
+    def run(self) -> tuple[list[int], list[int]]:
+        try:
+            while self.step():
+                pass
+            return (self.acc, self.program_counter)
+        except IndexError:
+            return (self.acc, self.program_counter)
+
 
 def parse(puzzle_input: str) -> list[Instruction]:
     """Parse input"""
@@ -76,8 +120,32 @@ def part1(program: list[Instruction]):
     return VM(program).run()[0]
 
 
-def part2(data):
+def try_modified_program(program, index_from_end) -> int | None:
+    match program[-index_from_end]:
+        case Instruction(opcode=OpCode.ACC, argument=arg):
+            restore = Instruction(OpCode.ACC, arg)
+            pass
+        case Instruction(opcode=OpCode.JMP, argument=arg):
+            program[-index_from_end] = Instruction(OpCode.NOP, arg)
+            restore = Instruction(OpCode.JMP, arg)
+        case Instruction(opcode=OpCode.NOP, argument=arg):
+            program[-index_from_end] = Instruction(OpCode.JMP, arg)
+            restore = Instruction(OpCode.NOP, arg)
+        case _:
+            raise ValueError
+    acc, program_counter = TimeTravelVM(program).run()
+    program[-index_from_end] = restore
+    if program_counter[-1] >= len(program):
+        return acc[-1]
+    else:
+        return None
+
+
+def part2(program):
     """Solve part 2"""
+    for i in range(len(program)):
+        if (r := try_modified_program(program, i)) is not None:
+            return r
 
 
 def solve(puzzle_input):
